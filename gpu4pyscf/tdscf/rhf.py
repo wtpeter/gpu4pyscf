@@ -27,6 +27,7 @@ from gpu4pyscf.lib import logger
 from gpu4pyscf.gto.int3c1e import int1e_grids
 from gpu4pyscf.scf import _response_functions # noqa
 from pyscf import __config__
+from gpu4pyscf.tdscf._krylov_tools import krylov_solver
 
 REAL_EIG_THRESHOLD = tdhf_cpu.REAL_EIG_THRESHOLD
 #OUTPUT_THRESHOLD = tdhf_cpu.OUTPUT_THRESHOLD
@@ -634,10 +635,14 @@ class TDA(TDBase):
             # Convert the self.xy storage to the initial guess format
             x0 = [x.ravel() for x, y in x0]
 
-        self.converged, self.e, x1 = lr_eigh(
-            vind, x0, precond, tol_residual=self.conv_tol, lindep=self.lindep,
-            nroots=nstates, x0sym=x0sym, pick=pickeig, max_cycle=self.max_cycle,
-            max_memory=self.max_memory, verbose=log)
+        # self.converged, self.e, x1 = lr_eigh(
+        #     vind, x0, precond, tol_residual=self.conv_tol, lindep=self.lindep,
+        #     nroots=nstates, x0sym=x0sym, pick=pickeig, max_cycle=self.max_cycle,
+        #     max_memory=self.max_memory, verbose=log)
+        self.converged, self.e, x1 = krylov_solver(vind, hdiag, conv_tol=self.conv_tol, n_states=nstates,
+                                                   max_iter=self.max_cycle, verbose=log)
+        self.e = self.e.get()
+        x1 = x1.get()
 
         nocc = mol.nelectron // 2
         nmo = mf.mo_occ.size
