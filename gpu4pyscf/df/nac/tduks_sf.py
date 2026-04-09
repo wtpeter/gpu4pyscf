@@ -15,11 +15,11 @@
 
 from gpu4pyscf.df import df
 from gpu4pyscf.df.grad import tdrhf as tdrhf_grad_df
-from gpu4pyscf.grad import tduks_sf as tduks_sf_grad
+from gpu4pyscf.nac import tduks_sf as tduks_sf_nac
 from gpu4pyscf.tdscf import uhf as tduhf
 
 
-class Gradients(tduks_sf_grad.Gradients):
+class NAC(tduks_sf_nac.NAC):
     _keys = {'with_df', 'auxbasis_response'}
 
     auxbasis_response = True
@@ -30,5 +30,3 @@ class Gradients(tduks_sf_grad.Gradients):
 
     jk_energies_per_atom = tdrhf_grad_df.Gradients.jk_energies_per_atom
 
-
-Grad = Gradients

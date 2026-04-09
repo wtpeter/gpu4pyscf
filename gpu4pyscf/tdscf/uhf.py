@@ -1134,7 +1134,10 @@ class SpinFlipTDA(TDBase):
 
     def NAC(self):
         if getattr(self._scf, 'with_df', None):
-            raise NotImplementedError('spin-flip TDDFT/TDA NAC with density-fitting are not implemented')
+
+            from gpu4pyscf.df.nac import tduks_sf
+
+            return tduks_sf.NAC(self)
         else:
             from gpu4pyscf.nac import tduks_sf
 
